@@ -13,6 +13,7 @@
   },
   "scripts": {
     "build": "node index.js",
+    "metadata": "node index.js metadata",
     "generate": "node index.js",
     "rarity": "node utils/rarity.js",
     "preview": "node utils/preview.js",
