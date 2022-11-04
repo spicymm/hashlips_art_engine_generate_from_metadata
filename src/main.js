@@ -279,33 +279,33 @@ const isDnaUnique = (_DnaList = new Set(), _dna = "") => {
   return !_DnaList.has(_filteredDNA);
 };
 
-// const createDna = (_layers) => {
-//   let randNum = [];
-//   _layers.forEach((layer) => {
-//     var totalWeight = 0;
-//     layer.elements.forEach((element) => {
-//       totalWeight += element.weight;
-//     });
-//     // number between 0 - totalWeight
-//     let random = Math.floor(Math.random() * totalWeight);
-//     for (var i = 0; i < layer.elements.length; i++) {
-//       // subtract the current weight from the random weight until we reach a sub zero value.
-//       random -= layer.elements[i].weight;
-//       if (random < 0) {
-//         return randNum.push(
-//           `${layer.elements[i].id}:${layer.elements[i].filename}${
-//             layer.bypassDNA ? "?bypassDNA=true" : ""
-//           }`
-//         );
-//       }
-//     }
-//   });
-//   return randNum.join(DNA_DELIMITER);
-// };
+const createDna = (_layers) => {
+  let randNum = [];
+  _layers.forEach((layer) => {
+    var totalWeight = 0;
+    layer.elements.forEach((element) => {
+      totalWeight += element.weight;
+    });
+    // number between 0 - totalWeight
+    let random = Math.floor(Math.random() * totalWeight);
+    for (var i = 0; i < layer.elements.length; i++) {
+      // subtract the current weight from the random weight until we reach a sub zero value.
+      random -= layer.elements[i].weight;
+      if (random < 0) {
+        return randNum.push(
+          `${layer.elements[i].id}:${layer.elements[i].filename}${
+            layer.bypassDNA ? "?bypassDNA=true" : ""
+          }`
+        );
+      }
+    }
+  });
+  return randNum.join(DNA_DELIMITER);
+};
 
 let numIterationOfMetadata = 0;
 
-const createDna = (_layers) => {
+const createDnaFromMetadata = (_layers) => {
   try {
     const metadata = require("../src/_metadata.json");
     let dna = [];
@@ -359,7 +359,7 @@ function shuffle(array) {
   return array;
 }
 
-const startCreating = async () => {
+const startCreating = async (FROM_METADATA) => {
   let layerConfigIndex = 0;
   let editionCount = 1;
   let failedCount = 0;
@@ -384,7 +384,9 @@ const startCreating = async () => {
     while (
       editionCount <= layerConfigurations[layerConfigIndex].growEditionSizeTo
     ) {
-      let newDna = createDna(layers);
+      let newDna = FROM_METADATA
+        ? createDnaFromMetadata(layers)
+        : createDna(layers);
       if (isDnaUnique(dnaList, newDna)) {
         let results = constructLayerToDna(newDna, layers);
         let loadedElements = [];
