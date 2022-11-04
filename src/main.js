@@ -31,6 +31,9 @@ var dnaList = new Set();
 const DNA_DELIMITER = "-";
 const HashlipsGiffer = require(`${basePath}/modules/HashlipsGiffer.js`);
 
+const metadata = require("../src/_metadata.json");
+let numIteration = 0;
+
 let hashlipsGiffer = null;
 
 const buildSetup = () => {
@@ -279,28 +282,63 @@ const isDnaUnique = (_DnaList = new Set(), _dna = "") => {
   return !_DnaList.has(_filteredDNA);
 };
 
+// const createDna = (_layers) => {
+//   let randNum = [];
+//   _layers.forEach((layer) => {
+//     var totalWeight = 0;
+//     layer.elements.forEach((element) => {
+//       totalWeight += element.weight;
+//     });
+//     // number between 0 - totalWeight
+//     let random = Math.floor(Math.random() * totalWeight);
+//     for (var i = 0; i < layer.elements.length; i++) {
+//       // subtract the current weight from the random weight until we reach a sub zero value.
+//       random -= layer.elements[i].weight;
+//       if (random < 0) {
+//         return randNum.push(
+//           `${layer.elements[i].id}:${layer.elements[i].filename}${
+//             layer.bypassDNA ? "?bypassDNA=true" : ""
+//           }`
+//         );
+//       }
+//     }
+//   });
+//   return randNum.join(DNA_DELIMITER);
+// };
+
 const createDna = (_layers) => {
-  let randNum = [];
-  _layers.forEach((layer) => {
-    var totalWeight = 0;
-    layer.elements.forEach((element) => {
-      totalWeight += element.weight;
-    });
-    // number between 0 - totalWeight
-    let random = Math.floor(Math.random() * totalWeight);
-    for (var i = 0; i < layer.elements.length; i++) {
-      // subtract the current weight from the random weight until we reach a sub zero value.
-      random -= layer.elements[i].weight;
-      if (random < 0) {
-        return randNum.push(
-          `${layer.elements[i].id}:${layer.elements[i].filename}${
-            layer.bypassDNA ? "?bypassDNA=true" : ""
-          }`
-        );
-      }
-    }
+  let dna = [];
+  // console.log(_layers[0].elements);
+  let nftAttributes = metadata[numIteration].attributes;
+  nftAttributes.forEach((attribute, index) => {
+    let attributeValue = attribute.value;
+    let currentLayer = _layers[index].elements;
+    let requiredLayerAttribute = currentLayer.find(
+      (layerAttribute) => layerAttribute.name == attributeValue
+    );
+    dna.push(`${requiredLayerAttribute.id}:${requiredLayerAttribute.filename}`);
   });
-  return randNum.join(DNA_DELIMITER);
+  // _layers.forEach((layer) => {
+  //   var totalWeight = 0;
+  //   layer.elements.forEach((element) => {
+  //     totalWeight += element.weight;
+  //   });
+  //   // number between 0 - totalWeight
+  //   let random = Math.floor(Math.random() * totalWeight);
+  //   for (var i = 0; i < layer.elements.length; i++) {
+  //     // subtract the current weight from the random weight until we reach a sub zero value.
+  //     random -= layer.elements[i].weight;
+  //     if (random < 0) {
+  //       return randNum.push(
+  //         `${layer.elements[i].id}:${layer.elements[i].filename}${
+  //           layer.bypassDNA ? "?bypassDNA=true" : ""
+  //         }`
+  //       );
+  //     }
+  //   }
+  // });
+  numIteration++;
+  return dna.join(DNA_DELIMITER);
 };
 
 const writeMetaData = (_data) => {
