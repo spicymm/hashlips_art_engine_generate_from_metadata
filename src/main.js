@@ -307,7 +307,7 @@ let numIterationOfMetadata = 0;
 
 const createDnaFromMetadata = (_layers) => {
   try {
-    const metadata = require("../src/_metadata.json");
+    const metadata = require("../layers/_metadata.json");
     let dna = [];
     let nftAttributes = metadata[numIterationOfMetadata].attributes;
     nftAttributes.forEach((attribute, index) => {
